@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from apps.accounts.views import DashboardView
+from apps.dashboard.views import DashboardView # Agora buscamos do app dashboard
 from apps.students.views import StudentListView 
 from apps.attendance.views import AttendanceSheetView
 
@@ -10,4 +10,5 @@ urlpatterns = [
     path('', DashboardView.as_view(), name='dashboard'),
     path('alunos/', StudentListView.as_view(), name='student-list'), 
     path('chamada/<int:classroom_id>/', AttendanceSheetView.as_view(), name='attendance-sheet'),
+    path('', DashboardView.as_view(), name='dashboard'),
 ]

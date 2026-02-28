@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 
     # SEUS APPS (O prefixo apps. é fundamental)
     'apps.accounts',
+    'apps.dashboard',  # <-- Deve estar assim
     'apps.students',
     'apps.academics',
     'apps.grades',
