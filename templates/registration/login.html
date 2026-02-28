@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 80vh; margin: 0;">
+    <div class="col-12 col-sm-8 col-md-6 col-lg-4" style="min-width: 320px;">
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-4 p-sm-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold text-primary display-6 text-break lh-1 mb-2">EduManager</h2>
+                    <p class="text-muted small">Acesse sua conta escolar</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Usuário</label>
+                        <input type="text" name="username" class="form-control form-control-lg fs-6" placeholder="Seu usuário" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold">Senha</label>
+                        <input type="password" name="password" class="form-control form-control-lg fs-6" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm fw-bold">
+                        Entrar no Sistema
+                    </button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <p class="text-muted" style="font-size: 0.8rem;">
+                        Esqueceu a senha? Entre em contato com a secretaria.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="alert alert-info mt-4 small border-0 shadow-sm rounded-3">
+            <i class="bi bi-info-circle me-2"></i><strong>Dica de Teste:</strong><br>
+            <span class="ms-4">User: <code>aluno_teste</code> / Senha: <code>senha123</code></span>
+        </div>
+    </div>
+</div>
+{% endblock %}

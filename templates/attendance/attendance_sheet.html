@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+        <h5 class="mb-0"><i class="bi bi-calendar-check text-success"></i> Diário de Classe: {{ classroom.name }}</h5>
+        <span class="badge bg-light text-dark border">Data: {{ today|date:"d/m/Y" }}</span>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 50px;">Presença</th>
+                            <th>Nº Matrícula</th>
+                            <th>Nome do Aluno</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in enrollments %}
+                        <tr>
+                            <td class="text-center">
+                                <input class="form-check-input" type="checkbox" name="present_students" 
+                                       value="{{ item.student.id }}" checked style="transform: scale(1.5);">
+                            </td>
+                            <td><small class="text-muted">{{ item.student.registration_number }}</small></td>
+                            <td><strong>{{ item.student.user.get_full_name|default:item.student.user.username }}</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 d-flex justify-content-end">
+                <a href="/" class="btn btn-light me-2">Cancelar</a>
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-check-circle me-1"></i> Salvar Chamada de Hoje
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

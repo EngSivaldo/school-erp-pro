@@ -1,0 +1,13 @@
+# Web Framework
+django>=5.0
+
+# Variáveis de Ambiente e Configurações
+python-dotenv
+dj-database-url
+
+# Utilitários de Banco e Imagens
+Pillow
+python-dateutil
+
+# Servidor de Produção (Essencial para Docker)
+gunicorn

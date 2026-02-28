@@ -1,0 +1,1 @@
+# Este app processa dados de outros modelos para gerar PDFs e Dashboards.
