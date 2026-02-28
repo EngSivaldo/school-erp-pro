@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-0 text-gray-800">Ficha do Aluno</h4>
+            <span class="text-muted">Matrícula: <strong>{{ student.registration_number }}</strong></span>
+        </div>
+        <div>
+            <a href="{% url 'student_list' %}" class="btn btn-light border shadow-sm me-2">Voltar</a>
+            <a href="{% url 'student_update' student.pk %}" class="btn btn-warning shadow-sm">
+                <i class="fas fa-edit me-1"></i> Editar Dados
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Informações Acadêmicas e Pessoais</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Nome Completo:</div>
+                        <div class="col-sm-8 fw-bold text-capitalize">{{ student.user.get_full_name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Curso:</div>
+                        <div class="col-sm-8"><span class="badge bg-primary">{{ student.course.name|default:"Não definido" }}</span></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">E-mail:</div>
+                        <div class="col-sm-8">{{ student.user.email }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Telefone:</div>
+                        <div class="col-sm-8">{{ student.phone }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Data de Nascimento:</div>
+                        <div class="col-sm-8">{{ student.birth_date|date:"d/m/Y" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Endereço Residencial</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small d-block">Logradouro</label>
+                            <span>{{ student.address }}, {{ student.number }}</span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small d-block">Bairro</label>
+                            <span>{{ student.neighborhood }}</span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="text-muted small d-block">CEP</label>
+                            <span>{{ student.cep }}</span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="text-muted small d-block">Cidade</label>
+                            <span>{{ student.city }}</span>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="text-muted small d-block">Estado</label>
+                            <span>{{ student.state }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body text-center py-4">
+                    <div class="mb-3">
+                        {% if student.is_active %}
+                            <i class="fas fa-check-circle fa-3x text-success"></i>
+                            <h5 class="mt-2 text-success">Aluno Ativo</h5>
+                        {% else %}
+                            <i class="fas fa-times-circle fa-3x text-danger"></i>
+                            <h5 class="mt-2 text-danger">Aluno Inativo</h5>
+                        {% endif %}
+                    </div>
+                    <hr>
+                    <p class="small text-muted mb-0">Cadastrado em: {{ student.user.date_joined|date:"d/m/Y" }}</p>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Observações Médicas</h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted italic">{{ student.medical_notes|default:"Nenhuma observação registrada." }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

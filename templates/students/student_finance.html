@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="mb-0 text-gray-800">Financeiro: {{ student.user.get_full_name }}</h4>
+            <span class="text-muted">Matrícula: <strong>{{ student.registration_number }}</strong> | Curso: {{ student.course.name }}</span>
+        </div>
+        <a href="{% url 'student_list' %}" class="btn btn-light border shadow-sm">Voltar para Lista</a>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total do Contrato</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                R$ {{ total_contrato|floatformat:2 }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Pago</div>
+                           <div class="h5 mb-0 font-weight-bold text-gray-800 text-success">
+                                R$ {{ total_pago|floatformat:2 }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Plano de Pagamento (12 Parcelas)</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Parcela</th>
+                            <th>Vencimento</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                            <th>Data Pagamento</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for installment in installments %}
+                        <tr>
+                            <td><strong>{{ installment.number }}/12</strong></td>
+                            <td>{{ installment.due_date|date:"d/m/Y" }}</td>
+                            <td>R$ {{ installment.value }}</td>
+                            <td>
+                                {% if installment.is_paid %}
+                                    <span class="badge bg-success-soft text-success border border-success">
+                                        <i class="fas fa-check me-1"></i> Pago
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-warning-soft text-warning border border-warning">
+                                        <i class="fas fa-clock me-1"></i> Pendente
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>{{ installment.payment_date|date:"d/m/Y"|default:"-" }}</td>
+                            <td class="text-center">
+                            {% if not installment.is_paid %}
+                                <form action="{% url 'installment_pay' installment.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-success shadow-sm">
+                                        <i class="fas fa-hand-holding-usd me-1"></i> Baixar
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="text-success small fw-bold">
+                                    <i class="fas fa-check-double"></i> Processado
+                                </span>
+                            {% endif %}
+                        </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">Nenhuma parcela gerada para este aluno.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-success-soft { background-color: #e8f5e9; }
+    .bg-warning-soft { background-color: #fffde7; }
+</style>
+{% endblock %}

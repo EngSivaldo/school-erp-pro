@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="d-flex justify-content-between mb-4 px-5">
+                <div class="text-center step-indicator active" id="step-1-label">
+                    <div class="step-icon shadow-sm">1</div>
+                    <small class="fw-bold">Dados Pessoais</small>
+                </div>
+                <div class="text-center step-indicator text-muted" id="step-2-label">
+                    <div class="step-icon shadow-sm">2</div>
+                    <small>Endereço</small>
+                </div>
+                <div class="text-center step-indicator text-muted" id="step-3-label">
+                    <div class="step-icon shadow-sm">3</div>
+                    <small>Finalização</small>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                {% if form.errors %}
+                    <div class="alert alert-danger m-3">
+                        <strong>Verifique os campos abaixo:</strong>
+                        <small>{{ form.errors }}</small>
+                    </div>
+                {% endif %}
+
+                <form method="post" id="stepper-form" class="card-body p-4">
+                    {% csrf_token %}
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+                        <h5 class="text-primary fw-bold mb-0">
+                            {% if is_edit %}
+                                <i class="fas fa-user-edit me-2"></i> Editando: {{ object.registration_number }}
+                            {% else %}
+                                <i class="fas fa-user-plus me-2"></i> Cadastro de Novo Aluno
+                            {% endif %}
+                        </h5>
+                        <span class="badge bg-light text-dark border">Ano Letivo: 2026</span>
+                    </div>
+
+                    <div class="step-content" id="step-1">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Curso de Interesse</label>
+                                {{ form.course }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Nome</label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Sobrenome</label>
+                                {{ form.last_name }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">E-mail Institucional</label>
+                                {% if is_edit %}
+                                    <input type="text" class="form-control bg-light" value="{{ object.user.email }}" readonly title="E-mail não pode ser alterado">
+                                    <div class="d-none">{{ form.email }}</div>
+                                {% else %}
+                                    {{ form.email }}
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Telefone/WhatsApp</label>
+                                {{ form.phone }}
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="btn btn-primary px-5 shadow" onclick="nextStep(2)">Próximo Passo <i class="fas fa-arrow-right ms-2"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="step-content d-none" id="step-2">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">CEP</label>
+                                {{ form.cep }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Rua/Logradouro</label>
+                                {{ form.address }}
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fw-semibold">Número</label>
+                                {{ form.number }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Bairro</label>
+                                {{ form.neighborhood }}
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label fw-semibold">Cidade</label>
+                                {{ form.city }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Estado</label>
+                                {{ form.state }}
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-light border px-4" onclick="nextStep(1)">Voltar</button>
+                            <button type="button" class="btn btn-primary px-5 shadow" onclick="nextStep(3)">Próximo Passo <i class="fas fa-arrow-right ms-2"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="step-content d-none" id="step-3">
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Data de Nascimento</label>
+                                {{ form.birth_date }}
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold">Observações Médicas ou de Restrição</label>
+                                {{ form.medical_notes }}
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                            <button type="button" class="btn btn-light border px-4" onclick="nextStep(2)">Voltar</button>
+                            <button type="submit" class="btn btn-success px-5 fw-bold shadow">
+                                {% if is_edit %} Salvar Alterações {% else %} Concluir Matrícula {% endif %}
+                                <i class="fas fa-check ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .step-icon { width: 40px; height: 40px; background: #e2e8f0; color: #64748b; border-radius: 50%; line-height: 40px; margin: 0 auto 5px; font-weight: bold; transition: 0.3s; }
+    .step-indicator.active .step-icon { background: #3b82f6; color: white; transform: scale(1.1); }
+    .step-indicator.active small { color: #3b82f6; }
+    .card { border-radius: 15px; }
+    .form-control:focus { border-color: #3b82f6; box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25); }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        // Aplicação de Máscaras
+        $('#id_phone').mask('(00) 00000-0000');
+        $('#id_cep').mask('00000-000');
+        
+        // Auto-Capitalização (Primeira letra maiúscula)
+        $('#id_first_name, #id_last_name').on('blur', function() {
+            let val = $(this).val().toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+            $(this).val(val);
+        });
+    });
+
+    // Lógica do Stepper
+    function nextStep(step) {
+        document.querySelectorAll('.step-content').forEach(el => el.classList.add('d-none'));
+        document.getElementById('step-' + step).classList.remove('d-none');
+        
+        document.querySelectorAll('.step-indicator').forEach((el, index) => {
+            if (index + 1 === step) {
+                el.classList.add('active');
+                el.classList.remove('text-muted');
+            } else {
+                el.classList.remove('active');
+                el.classList.add('text-muted');
+            }
+        });
+    }
+
+    // Lógica ViaCEP
+    document.getElementById('id_cep').addEventListener('blur', function() {
+        const cep = this.value.replace(/\D/g, '');
+        if (cep.length === 8) {
+            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.erro) {
+                        document.getElementById('id_address').value = data.logradouro;
+                        document.getElementById('id_neighborhood').value = data.bairro;
+                        document.getElementById('id_city').value = data.localidade;
+                        document.getElementById('id_state').value = data.uf;
+                        document.getElementById('id_number').focus();
+                    }
+                });
+        }
+    });
+</script>
+{% endblock %}

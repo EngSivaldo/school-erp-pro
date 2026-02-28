@@ -11,4 +11,5 @@ urlpatterns = [
     path('alunos/', StudentListView.as_view(), name='student-list'), 
     path('chamada/<int:classroom_id>/', AttendanceSheetView.as_view(), name='attendance-sheet'),
     path('', DashboardView.as_view(), name='dashboard'),
+    path('students/', include('apps.students.urls')),
 ]
