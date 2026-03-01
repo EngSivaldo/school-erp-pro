@@ -1,4 +1,5 @@
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import get_user_model
@@ -118,20 +119,83 @@ class StudentFinanceView(LoginRequiredMixin, DetailView):
         return context
     
 
+# from django.shortcuts import get_object_or_404, redirect
+# from django.views import View
+
+# class InstallmentPayView(LoginRequiredMixin, View):
+#     def post(self, request, pk):
+#         # O propósito aqui é localizar a parcela pelo ID (pk)
+#         installment = get_object_or_404(Installment, pk=pk)
+        
+#         # Mudamos o status e gravamos a data atual
+#         installment.is_paid = True
+#         installment.payment_date = date.today()
+#         installment.save()
+        
+#         messages.success(request, f"Parcela {installment.number} baixada com sucesso!")
+        
+#         # Retorna para a página do financeiro do aluno correspondente
+#         return redirect('student_finance', pk=installment.student.pk)
+
+
+
+import uuid # Para gerar um código de transação único
 from django.shortcuts import get_object_or_404, redirect
-from django.views import View
+from .models import Installment
 
 class InstallmentPayView(LoginRequiredMixin, View):
+    """
+    O propósito desta View é simular o que o Mercado Pago faz:
+    Recebe a parcela e gera um link para o aluno pagar.
+    """
     def post(self, request, pk):
-        # O propósito aqui é localizar a parcela pelo ID (pk)
         installment = get_object_or_404(Installment, pk=pk)
         
-        # Mudamos o status e gravamos a data atual
-        installment.is_paid = True
-        installment.payment_date = date.today()
-        installment.save()
+        # Simulando a resposta do Mercado Pago
+        # No futuro, aqui chamaremos a função sdk.preference().create()
+        payment_id = str(uuid.uuid4()) # ID fictício da transação
         
-        messages.success(request, f"Parcela {installment.number} baixada com sucesso!")
+        # Link de Checkout Simulado (Pode ser uma página externa ou interna)
+        # Por enquanto, vamos redirecionar para uma página de 'Processando'
+        messages.info(request, f"Link de pagamento gerado para a parcela {installment.number}!")
         
-        # Retorna para a página do financeiro do aluno correspondente
+        # Guardamos o ID da transação na parcela (opcional)
+        # installment.transaction_id = payment_id
+        # installment.save()
+        
         return redirect('student_finance', pk=installment.student.pk)
+    
+
+import json
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+
+@method_decorator(csrf_exempt, name='dispatch') # O propósito é permitir que o Mercado Pago envie dados sem erro de segurança CSRF
+class MercadoPagoWebhookView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            # 1. Lemos o sinal enviado pelo Mercado Pago
+            data = json.loads(request.body)
+            
+            # O propósito aqui é filtrar apenas avisos de 'payment' (pagamento)
+            if data.get("type") == "payment":
+                payment_id = data.get("data", {}).get("id")
+                
+                # SIMULAÇÃO: No mundo real, aqui usaríamos o SDK para consultar o status
+                # preference_id = sdk.payment().get(payment_id)
+                
+                # 2. Localizamos a parcela (estamos usando um exemplo fixo para teste)
+                # No real, buscaríamos pelo 'external_reference' que enviamos na criação
+                installment = Installment.objects.filter(is_paid=False).first()
+                
+                if installment:
+                    installment.is_paid = True
+                    installment.payment_date = date.today()
+                    installment.save()
+                    print(f"✅ Webhook: Parcela {installment.id} confirmada com sucesso!")
+
+            return HttpResponse(status=200) # O propósito é dizer ao MP: 'Recebi a mensagem!'
+        except Exception as e:
+            print(f"❌ Erro no Webhook: {e}")
+            return HttpResponse(status=500)

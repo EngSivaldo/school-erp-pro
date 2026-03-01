@@ -84,19 +84,17 @@
                             </td>
                             <td>{{ installment.payment_date|date:"d/m/Y"|default:"-" }}</td>
                             <td class="text-center">
-                            {% if not installment.is_paid %}
-                                <form action="{% url 'installment_pay' installment.pk %}" method="post">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-success shadow-sm">
-                                        <i class="fas fa-hand-holding-usd me-1"></i> Baixar
-                                    </button>
-                                </form>
-                            {% else %}
-                                <span class="text-success small fw-bold">
-                                    <i class="fas fa-check-double"></i> Processado
-                                </span>
-                            {% endif %}
-                        </td>
+                                {% if not installment.is_paid %}
+                                    <form action="{% url 'installment_pay' installment.pk %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-primary shadow-sm">
+                                            <i class="fas fa-credit-card me-1"></i> Pagar Agora
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="badge bg-success">Pago em {{ installment.payment_date|date:"d/m/Y" }}</span>
+                                {% endif %}
+                            </td>
                         </tr>
                         {% empty %}
                         <tr>
